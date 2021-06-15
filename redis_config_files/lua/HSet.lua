@@ -8,7 +8,7 @@ local update = false
 
 local prior = redis.call('hget', table, field)
 if prior == nil then
-  update == true
+  update = true
 else
   update = (ARGV[3] ~= prior)
 end
