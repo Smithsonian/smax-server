@@ -27,7 +27,7 @@ redis.call('hincrby', '<writes>', id, '1')
 -- Send notification for the table update
 redis.call('publish', 'smax:'..id, origin)
  
--- Add/update the parent hierachy as needed
+--Add/update the parent hierachy as needed
 local parent = ''
 for child in table:gmatch('[^:]+') do
   if parent == '' then
@@ -40,9 +40,9 @@ for child in table:gmatch('[^:]+') do
     redis.call('hset', '<timestamps>', id, timestamp)
     redis.call('hset', '<origins>', id, origin)
     redis.call('hincrby', '<writes>', id, '1')
-     
-    redis.call('publish', 'smax:'..id, origin)
-    
+
+    --redis.call('publish', 'smax:'..id, origin)
+
     parent = id
   end
 end
