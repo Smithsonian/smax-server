@@ -70,7 +70,7 @@ for i,ser in pairs(counts) do
  if ser then
   serials[2*i] = tonumber(ser) + 1 
  else
-  serials[2+i] = 1
+  serials[2*i] = 1
  end
 end 
 redis.call('hmset', '<writes>', unpack(serials))
