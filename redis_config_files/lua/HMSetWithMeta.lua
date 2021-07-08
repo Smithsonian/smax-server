@@ -94,9 +94,9 @@ for child in table:gmatch('[^:]+') do
     redis.call('hset', '<timestamps>', id, timestamp)
     redis.call('hset', '<origins>', id, origin)
     redis.call('hincrby', '<writes>', id, '1')
-    if notifyParents == 'T' then
-      redis.call('publish', 'smax:'..id, origin)
-    end
+    --if notifyParents == 'T' then
+    --  redis.call('publish', 'smax:'..id, origin)
+    --end
 	  parent = id
   end
 end
