@@ -1,4 +1,4 @@
-                                   #!/bin/bash
+#!/bin/bash
 #
 # Loads the SMA-X scripts into Redis, and stores their hash values under
 # 'persistent:scripts'
