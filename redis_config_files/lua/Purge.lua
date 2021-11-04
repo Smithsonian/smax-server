@@ -4,7 +4,7 @@
 
 local n = 0
 
-for i,key in pairs(redis.call('keys', ARGV[1])) do
+for i,key in pairs(redis.call('keys', ARGV[1])) do 
 
   -- If key is a hash table the interate through elements to remove associated metadata
   if redis.call('type', key) == 'hash' do
@@ -32,3 +32,4 @@ for i,key in pairs(keys) do
 end
 
 return n
+
