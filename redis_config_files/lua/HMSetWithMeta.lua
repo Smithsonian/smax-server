@@ -11,6 +11,7 @@ local origin = ARGV[1]
 local time = redis.call('time')
 local timestamp = time[1].."."..string.format("%06d", time[2])
 
+
 -- arrays / tables we'll need
 local ids = {}          -- composited meta IDs for all fields to be set
 
@@ -31,6 +32,7 @@ local notifyParents = 'T'
 if #ARGV > leadArgs + 4 * N then
   notifyParents = ARGV[leadArgs + 4 * N + 1];
 end
+
 
 for k=1,N do 
  local i = leadArgs + 4*k-3     -- i is the original ARGV index
@@ -73,47 +75,30 @@ for i,ser in pairs(counts) do
 end 
 redis.call('hmset', '<writes>', unpack(serials))
 
-local isExternalRMUpdate = false
- local target = table:sub(4)
- if origin:sub(1, target:len()) ~= target then
-   isExternalRMUpdate = true
- end
-end
-
 -- Send notification of this update
 for i,id in pairs(ids) do
  redis.call('publish', 'smax:'..id, origin)
- 
- -- For RM updates coming from outside the targeted antenna send a notification
- -- to the antenna's RM connector, including the data
- if isExternalRMUpdate then
-  redis.call('publish', table, field .. "=" .. value)
- end
-end
 end
 
 
 -- Add/uppdate the parent hierachy as needed
 local parent = ''
-local newparent = 1
 for child in table:gmatch('[^:]+') do
- if parent == '' then
-  parent = child
- else
-  local id = parent..':'..child
-    
-  if newparent == 1 then
-   newparent = redis.call('hset', parent, child, id)
-   if newparent == 1 then
+  if parent == '' then
+    parent = child
+  else
+    local id = parent..':'..child
+    redis.call('hset', parent, child, id);
     redis.call('hset', '<types>', id, 'struct')
     redis.call('hset', '<dims>', id, '1')
-   end
+    redis.call('hset', '<timestamps>', id, timestamp)
+    redis.call('hset', '<origins>', id, origin)
+    redis.call('hincrby', '<writes>', id, '1')
+    --if notifyParents == 'T' then
+    --  redis.call('publish', 'smax:'..id, origin)
+    --end
+	  parent = id
   end
-    
-  redis.call('hset', '<timestamps>', id, timestamp)
-    
-	parent = id
- end
 end
 
 return result
