@@ -95,21 +95,15 @@ end
 
 -- Add/uppdate the parent hierachy as needed
 local parent = ''
-local newparent = 1
 for child in table:gmatch('[^:]+') do
  if parent == '' then
   parent = child
  else
   local id = parent..':'..child
     
-  if newparent == 1 then
-   newparent = redis.call('hset', parent, child, id)
-   if newparent == 1 then
-    redis.call('hset', '<types>', id, 'struct')
-    redis.call('hset', '<dims>', id, '1')
-   end
-  end
-    
+  redis.call('hset', parent, child, id)
+  redis.call('hset', '<types>', id, 'struct')
+  redis.call('hset', '<dims>', id, '1')   
   redis.call('hset', '<timestamps>', id, timestamp)
     
 	parent = id
