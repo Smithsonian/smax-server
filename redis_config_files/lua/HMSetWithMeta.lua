@@ -29,7 +29,7 @@ local N = (#ARGV - leadArgs) / 4     -- Number of fields
 -- whether or not we want to notify parent structures
 local notifyParents = 'T'
 if #ARGV > leadArgs + 4 * N then
-  notifyParents = ARGV[leadArgs + 4 * N + 1];
+ notifyParents = ARGV[leadArgs + 4 * N + 1]
 end
 
 for k=1,N do 
@@ -73,10 +73,12 @@ for i,ser in pairs(counts) do
 end 
 redis.call('hmset', '<writes>', unpack(serials))
 
+-- Check if updating RM variables...
 local isExternalRMUpdate = false
+if table:sub(1,3) == 'RM:' then
  local target = table:sub(4)
  if origin:sub(1, target:len()) ~= target then
-   isExternalRMUpdate = true
+  isExternalRMUpdate = true
  end
 end
 
@@ -87,7 +89,7 @@ for i,id in pairs(ids) do
  -- For RM updates coming from outside the targeted antenna send a notification
  -- to the antenna's RM connector, including the data
  if isExternalRMUpdate then
-  redis.call('publish', table, field .. "=" .. value)
+  redis.call('publish', table ..':'.. entries[i], entries[i+1])
  end
 end
 

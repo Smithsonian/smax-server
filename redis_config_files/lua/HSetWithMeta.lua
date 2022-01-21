@@ -32,7 +32,7 @@ redis.call('publish', 'smax:'..id, origin)
 if table:sub(1, 3) == "RM:" then
  local target = table:sub(4)
  if origin:sub(1, target:len()) ~= target then
-  redis.call('publish', table, field .. "=" .. value)
+  redis.call('publish', table..':'..field, value)
  end
 end
  
