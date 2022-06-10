@@ -1,0 +1,12 @@
+[Unit]
+Description=SMA-X LUA helpers
+PartOf=redis.service
+After=redis.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/smax-init.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

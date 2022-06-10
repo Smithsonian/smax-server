@@ -25,9 +25,11 @@ local serials = {}      -- {field,serial} pairs
 local leadArgs = 1
 local N = math.floor((#ARGV - leadArgs) / 4)     -- Number of fields
 
--- A trailing 'T' argument specifies that this is a top-level structure
--- (not a nested substructure component in a series of updates)
-local isNested = (ARGV[leadArgs + 4 * N + 1] ~= 'T')
+-- A trailing 'T' value may explicitly request to update parent structures also.
+local updateParents = false
+if #ARGV > leadArgs + 4 * N then
+ updateParents = (ARGV[leadArgs + 4 * N + 1] == 'T')
+end
 
 for k=1,N do 
  local i = leadArgs + 4*k-3     -- i is the original ARGV index
@@ -71,15 +73,17 @@ end
 
 redis.call('hset', '<writes>', unpack(serials))
 
-local from = origin;
+local from = origin
 
-if isNested then
- -- If thus is not a top-level structure, tag the message body with '<nested>'
- from = origin .. ' <nested>'
+if not updateParents then
+ -- If this is not a parent structure, tag the message body with '<hmset>'
+ from = origin .. ' <hmset>'
 end
 
 -- Notify of the table update itself.
 redis.call('publish', 'smax:'..table, from)
+
+local notifyLeafs = true
 
 -- <======== BEGIN SMA-specific section ========>
 -- Check if updating RM variables...
@@ -88,43 +92,49 @@ if table:sub(1, 3) == 'RM:' then
  -- Check if data is from an rm2smax replicator 
  isExternalRM = (origin:find(':rm2smax') == nil)
 end
+
+-- Skip leaf notifications for DSM structures, assuming that DSM structure
+-- fields are never 'listened' to individually
+notifyLeafs = (table:sub(1, 4) ~= 'DSM:')
 -- <========  END SMA-specific section  ========>
 
--- Tag leaf updates with '<nested>'
-local from = origin .. ' <nested>'
+if notifyLeafs then
+ -- Tag leaf updates with '<hmset>'
+ local from = origin .. ' <hmset>'
 
--- Send notification of all updated leafs also...
-for i,id in pairs(ids) do
- redis.call('publish', 'smax:'..id, from)
+ -- Send notification of all updated leafs also...
+ for i,id in pairs(ids) do
+  redis.call('publish', 'smax:'..id, from)
  
- -- <======== BEGIN SMA-specific section ========>
- -- For RM updates not coming from an `rm2smax` replicator, send an
- -- update notification (to an rm2smax replicator)
- if isExternalRM then
-  redis.call('publish', table ..':'.. entries[i], entries[i+1])
+  -- <======== BEGIN SMA-specific section ========>
+  -- For RM updates not coming from an `rm2smax` replicator, send an
+  -- update notification (to an rm2smax replicator)
+  if isExternalRM then
+   redis.call('publish', table ..':'.. entries[i], entries[i+1])
+  end
+  -- <========  END SMA-specific section  ========>
  end
- -- <========  END SMA-specific section  ========>
 end
 
--- If it's a nested sub-structure, then there isn't anything left to do. 
-if isNested then
- return
+-- If sending a substructure then we are done...
+if not updateParents then
+  return result
 end
 
 -- Add/uppdate the parent hierachy as needed
-local stem = ''
-for token in table:gmatch('[^:]+') do
- if stem == '' then
-  stem = token
+local parent = ''
+for child in table:gmatch('[^:]+') do
+ if parent == '' then
+  parent = child
  else
-  local id = stem..':'..token
+  local id = parent..':'..child
     
-  redis.call('hset', stem, token, id)
+  redis.call('hset', parent, child, id)
   redis.call('hset', '<types>', id, 'struct')
   redis.call('hset', '<dims>', id, '1')   
   redis.call('hset', '<timestamps>', id, timestamp)
     
-  stem = id
+	parent = id
  end
 end
 
