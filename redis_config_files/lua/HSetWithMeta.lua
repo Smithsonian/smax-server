@@ -26,15 +26,16 @@ redis.call('hincrby', '<writes>', id, '1')
 
 -- Send notification for the table update
 redis.call('publish', 'smax:'..id, origin)
- 
--- For RM updates coming from outside the targeted antenna send a notification
--- to the antenna's RM connector, including the data
-if table:sub(1, 3) == "RM:" then
- local target = table:sub(4)
- if origin:sub(1, target:len()) ~= target then
+  
+-- <======== BEGIN SMA-specific section ========>
+-- Check if updating RM variables...
+if table:sub(1, 3) == 'RM:' then
+ -- Check if data is from an rm2smax replicator
+ if origin:find(':rm2smax') == nil then
   redis.call('publish', table..':'..field, value)
  end
 end
+-- <========  END SMA-specific section  ========>
  
 -- Add/update the parent hierachy
 local parent = ''

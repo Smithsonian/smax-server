@@ -1,3 +1,14 @@
+-- keys: [1] Structure name (hash table)
+-- arguments: (none)
+-- Arras of:
+-- {
+--   { struct/substruct names },   -- (Bulk strings) names of structures and nested substructures to follow in order
+--   { field names }, { { values}, {types}, {dims}, {timestamps}, {origins}, {serials} },    -- data for first structure name
+--  ...                            --  further nested structure data 
+-- }
+
+local table = KEYS[1]   -- the name of the hash table
+
 local function HMGetWithMeta (table, fields)
   local values = redis.call('hmget', table, unpack(fields))
   local ids = {}
