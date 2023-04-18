@@ -37,12 +37,26 @@ load_script() {
   redis-cli hset scripts $NAME $SHA1
 }
 
+# Core SMA-X scripts
+load_script HSet
 load_script HGetWithMeta
 load_script HSetWithMeta
 load_script HMGetWithMeta
 load_script HMSetWithMeta
 load_script GetStruct
 load_script DSMGetTable
+
+# Utility scripts
+load_script ListHigherThan
+load_script ListLowerThan
+load_script ListNewerThan
+load_script ListOlderThan
+
+# Removal and cleanup SMA-X scripts
+load_script DelStruct
+load_script PurgeVolatile
+load_script Purge
+
 
 exit 0
 
