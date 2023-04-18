@@ -33,7 +33,7 @@ then
     cp "./redis.conf" "/etc/"
     systemctl daemon-reload
     systemctl enable redis
-    systemctl start redis
+    systemctl restart redis
 fi
 
 read -p "Enable smax-scripts at this time? " -n 1 -r
@@ -42,7 +42,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]
 then
     systemctl daemon-reload
     systemctl enable smax-scripts
-    systemctl start smax-scripts
+    systemctl restart smax-scripts
 fi
 
 exit
