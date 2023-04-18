@@ -22,11 +22,21 @@ load_script() {
   redis-cli hset persistent:scripts $NAME $SHA1
 }
 
+load_script HSet
 load_script HGetWithMeta
 load_script HSetWithMeta
 load_script HMGetWithMeta
 load_script HMSetWithMeta
 load_script GetStruct
-load_script HSet
+load_script DSMGetTable
+
+load_script ListHigherThan
+load_script ListLowerThan
+load_script ListNewerThan
+load_script ListOlderThan
+
+load_script DelStruct
+load_script PurgeVolatile
+load_script Purge
 
 exit 0
