@@ -7,7 +7,7 @@ local n = 0
 for i,key in pairs(redis.call('keys', ARGV[1])) do 
 
   -- If key is a hash table the interate through elements to remove associated metadata
-  if redis.call('type', key) == 'hash' do
+  if redis.call('type', key) == 'hash' then
     for j,field in pairs(redis.call('hkeys', key)) do
       local id = key .. ':' .. field
       redis.call('hdel', '<types>', id)
