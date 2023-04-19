@@ -34,6 +34,7 @@ load_script() {
   echo -n "> Loading $NAME. New? "
   SCRIPT=`cat $LUA/$NAME.lua`
   SHA1=`redis-cli script load "$SCRIPT"`
+  echo $SHA1
   redis-cli hset scripts $NAME $SHA1
 }
 
