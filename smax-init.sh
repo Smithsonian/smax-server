@@ -12,7 +12,7 @@
 # /lib/systemd/system so that the scripts are automatically re-loaded upon
 # Redis restarts.
 
-LUA="/usr/share/smax/lua"
+LUA="./lua"
 
 # Try for up to 5 seconds to get a response from redis...
 for i in {1..5}; do
