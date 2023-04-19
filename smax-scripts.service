@@ -5,6 +5,7 @@ After=redis.service
 
 [Service]
 Type=oneshot
+WorkingDirectory=/usr/share/smax
 ExecStart=/usr/share/smax/smax-init.sh
 RemainAfterExit=yes
 
