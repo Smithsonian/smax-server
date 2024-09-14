@@ -30,9 +30,12 @@ redis.call('publish', 'smax:'..id, origin)
 -- <======== BEGIN SMA-specific section ========>
 -- Check if updating RM variables...
 if table:sub(1, 3) == 'RM:' then
+ -- Send RM update data over PUB/SUB...
+ redis.call('publish', '@'..id, value)
  -- Check if data is from an rm2smax replicator
  if origin:find(':rm2smax') == nil then
-  redis.call('publish', table..':'..field, value)
+  -- Send RM insert notification over PUB/SUB
+  redis.call('publish', id, value)
  end
 end
 -- <========  END SMA-specific section  ========>
@@ -49,6 +52,7 @@ for child in table:gmatch('[^:]+') do
   redis.call('hset', '<types>', id, 'struct')
   redis.call('hset', '<dims>', id, '1')
   redis.call('hset', '<timestamps>', id, timestamp)
+  redis.call('hset', '<origins>', id, origin)
 
   parent = id
  end

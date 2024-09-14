@@ -1,6 +1,6 @@
 -- keys: [1] Structure name (hash table)
 -- arguments: (none)
--- Arras of:
+-- Arrays of:
 -- {
 --   { struct/substruct names },   -- (Bulk strings) names of structures and nested substructures to follow in order
 --   { field names }, { { values}, {types}, {dims}, {timestamps}, {origins}, {serials} },    -- data for first structure name

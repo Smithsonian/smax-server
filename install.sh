@@ -6,43 +6,62 @@
 #
 # Paul Grimes
 # 04/18/2023
+# 
+# Attila Kovacs
+# 09/14/2024
 #
-if [ "$EUID" -ne 0 ]
+
+if [ $EUID -ne 0 ]
   then echo "Please run as root"
   exit 1
 fi
 
-SMAX="/usr/share/smax"
-LUA="/usr/share/smax/lua"
-
-mkdir -p $SMAX
-mkdir -p $LUA
-
-cp -R "./lua" $SMAX
-cp "./smax-init.sh" $SMAX
-cp "./smax-scripts.service" $SMAX
-
-chmod -R 755 $SMAX
-
-ln -s "$SMAX/smax-scripts.service" "/etc/systemd/system/smax-scripts.service"
-
-read -p "Configure redis for SMA-X at this time? " -n 1 -r
-echo    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    cp "./redis.conf" "/etc/"
-    systemctl daemon-reload
-    systemctl enable redis
-    systemctl restart redis
+# You can configure DESTDIR before calling this script to install to a location other
+# than /usr (e.g. /usr/local or /opt).
+if [ "$DESTDIR" == "" ] ; then
+  DESTDIR="/usr"
 fi
 
-read -p "Enable smax-scripts at this time? " -n 1 -r
-echo    # (optional) move to a new line
-if [[ $REPLY =~ ^[Yy]$ ]]
-then
-    systemctl daemon-reload
-    systemctl enable smax-scripts
+# Create /usr/share/smax and its lua/ sub-directory
+SMAX="$(DESTDIR)/share/smax"
+
+# Copy LUA script over to /usr/share/smax
+mkdir -p $SMAX/lua
+cp -a lua $SMAX
+
+
+# install script loader and systemd unit file
+install -m 755 smax-init.sh /usr/sbin/
+install -m 644 smax-scripts.service /etc/systemd/system/
+
+# Register smax-scripts with systemd
+systemctl daemon-reload
+
+# if you call the script with a single argument 'auto', then it will install 
+# a default without asking any questions. (Without the option, the installer
+# will ask you to make some choices.)
+if [ "$1" == "auto" ] ; then
+  read -p "Are you going to use SMA-X at the SMA? " -n 1 -r
+  echo    # (optional) move to a new line
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+    sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua
+  fi
+
+  read -p "start redis with SMA-X scripts at this time? " -n 1 -r
+  echo    # (optional) move to a new line
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
     systemctl restart smax-scripts
+  fi
+  
+  read -p "Enable and start SMA-X at boot time? " -n 1 -r
+  echo    # (optional) move to a new line
+  if [[ $REPLY =~ ^[Yy]$ ]]
+  then
+    cp "./redis.conf" "/etc/"
+    systemctl enable redis
+    systemctl enable smax-scripts
+  fi  
 fi
 
-exit

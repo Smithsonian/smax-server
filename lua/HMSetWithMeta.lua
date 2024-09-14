@@ -83,8 +83,9 @@ redis.call('publish', 'smax:'..table, from)
 
 -- <======== BEGIN SMA-specific section ========>
 -- Check if updating RM variables...
+local isRM = table:sub(1, 3) == 'RM:'
 local isExternalRM = false
-if table:sub(1, 3) == 'RM:' then
+if isRM then
  -- Check if data is from an rm2smax replicator 
  isExternalRM = (origin:find(':rm2smax') == nil)
 end
@@ -94,14 +95,20 @@ end
 local from = origin .. ' <nested>'
 
 -- Send notification of all updated leafs also...
-for i,id in pairs(ids) do
+for i,id in ipairs(ids) do
  redis.call('publish', 'smax:'..id, from)
  
  -- <======== BEGIN SMA-specific section ========>
- -- For RM updates not coming from an `rm2smax` replicator, send an
- -- update notification (to an rm2smax replicator)
- if isExternalRM then
-  redis.call('publish', table ..':'.. entries[i], entries[i+1])
+ if isRM then
+  local value = entries[2*i];
+  -- Send RM update data over PUB/SUB...
+  redis.call('publish', '@'..id, value)
+  -- For RM updates not coming from an `rm2smax` replicator, send an
+  -- update notification (to an rm2smax replicator)
+  if isExternalRM then
+  -- Send RM insert notification over PUB/SUB
+   redis.call('publish', id, value)
+  end
  end
  -- <========  END SMA-specific section  ========>
 end
@@ -123,6 +130,7 @@ for token in table:gmatch('[^:]+') do
   redis.call('hset', '<types>', id, 'struct')
   redis.call('hset', '<dims>', id, '1')   
   redis.call('hset', '<timestamps>', id, timestamp)
+  redis.call('hset', '<origins>', id, origin)
     
   stem = id
  end
