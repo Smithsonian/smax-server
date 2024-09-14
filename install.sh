@@ -30,7 +30,7 @@ mkdir -p $SMAX/lua || exit 1
 cp -a lua $SMAX || exit 2
 
 # install script loader and systemd unit file
-install -m 755 smax-init.sh /usr/bin/ || exit 3
+install -m 755 smax-init.sh /usr/bin/ || ( exho  exit 3
 install -m 644 smax-scripts.service /etc/systemd/system/ || exit 4
 
 # Register smax-scripts with systemd
