@@ -1,0 +1,26 @@
+name: Test installer
+
+on: 
+  push:
+    paths:
+      - '*.sh'
+      - 'lua/**'
+      - 'smax-scripts.service'
+      - '.github/workflows/test.yml'
+
+jobs:
+
+  test:
+    name: Test on Ubuntu
+
+    runs-on: ubuntu-latest
+    steps:
+    - name: install redis
+      run: sudo apt install redis
+    
+    - name: Check out smax-server
+      uses: actions/checkout@v4
+      
+    - name: Run installer
+      run: sudo ./install.sh auto
+
