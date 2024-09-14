@@ -1,4 +1,13 @@
-# Server setup for SMA-X structured data sharing
+![Test installer](https://github.com/Smithsonian/smax-server/actions/workflows/test.yml/badge.svg)
+
+<picture>
+  <source srcset="resources/CfA-logo-dark.png" alt="CfA logo" media="(prefers-color-scheme: dark)"/>
+  <source srcset="resources/CfA-logo.png" alt="CfA logo" media="(prefers-color-scheme: light)"/>
+  <img src="resources/CfA-logo.png" alt="CfA logo" width="400" height="67" align="right"/>
+</picture>
+<br clear="all">
+
+# SMA-X server setup
 
 The SMA information eXchange (SMA-X) is a high performance and versatile data sharing platform for distributed 
 software systems. It is built around a central Redis database, and provides atomic access to structured data, 
