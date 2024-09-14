@@ -41,25 +41,30 @@ systemctl daemon-reload
 # a default without asking any questions. (Without the option, the installer
 # will ask you to make some choices.)
 if [ "$1" == "auto" ] ; then
+  # automatic installation 
+
+  sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua
+  systemctl restart smax-scripts
+  systemctl enable redis
+  systemctl enable smax-scripts
+else
+  # prompt for choices
+
   read -p "Are you going to use SMA-X at the SMA? " -n 1 -r
   echo    # (optional) move to a new line
-  if [[ $REPLY =~ ^[Yy]$ ]]
-  then
+  if [[ $REPLY =~ ^[Yy]$ ]] ; then 
     sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua
   fi
 
   read -p "start redis with SMA-X scripts at this time? " -n 1 -r
   echo    # (optional) move to a new line
-  if [[ $REPLY =~ ^[Yy]$ ]]
-  then
+  if [[ $REPLY =~ ^[Yy]$ ]] ; then
     systemctl restart smax-scripts
   fi
   
   read -p "Enable and start SMA-X at boot time? " -n 1 -r
   echo    # (optional) move to a new line
-  if [[ $REPLY =~ ^[Yy]$ ]]
-  then
-    cp "./redis.conf" "/etc/"
+  if [[ $REPLY =~ ^[Yy]$ ]] ; then
     systemctl enable redis
     systemctl enable smax-scripts
   fi  
