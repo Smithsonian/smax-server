@@ -26,16 +26,15 @@ fi
 SMAX="$(DESTDIR)/share/smax"
 
 # Copy LUA script over to /usr/share/smax
-mkdir -p $SMAX/lua
-cp -a lua $SMAX
-
+mkdir -p $SMAX/lua || exit 1
+cp -a lua $SMAX || exit 2
 
 # install script loader and systemd unit file
-install -m 755 smax-init.sh /usr/bin/
-install -m 644 smax-scripts.service /etc/systemd/system/
+install -m 755 smax-init.sh /usr/bin/ || exit 3
+install -m 644 smax-scripts.service /etc/systemd/system/ || exit 4
 
 # Register smax-scripts with systemd
-systemctl daemon-reload
+systemctl daemon-reload || exit 5
 
 # if you call the script with a single argument 'auto', then it will install 
 # a default without asking any questions. (Without the option, the installer
@@ -43,30 +42,30 @@ systemctl daemon-reload
 if [ "$1" == "auto" ] ; then
   # automatic installation 
 
-  sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua
-  systemctl restart smax-scripts
-  systemctl enable redis
-  systemctl enable smax-scripts
+  sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua || exit 6
+  systemctl restart smax-scripts || exit 7
+  systemctl enable redis || exit 8
+  systemctl enable smax-scripts || exit 9
 else
   # prompt for choices
 
   read -p "Are you going to use SMA-X at the SMA? " -n 1 -r
   echo    # (optional) move to a new line
   if [[ $REPLY =~ ^[Yy]$ ]] ; then 
-    sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua
+    sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua || exit 10
   fi
 
   read -p "start redis with SMA-X scripts at this time? " -n 1 -r
   echo    # (optional) move to a new line
   if [[ $REPLY =~ ^[Yy]$ ]] ; then
-    systemctl restart smax-scripts
+    systemctl restart smax-scripts || exit 11
   fi
   
   read -p "Enable and start SMA-X at boot time? " -n 1 -r
   echo    # (optional) move to a new line
   if [[ $REPLY =~ ^[Yy]$ ]] ; then
-    systemctl enable redis
-    systemctl enable smax-scripts
+    systemctl enable redis || exit 12
+    systemctl enable smax-scripts || exit 13
   fi  
 fi
 
