@@ -11,94 +11,140 @@
 # 09/14/2024
 #
 
+set -e
+
+
+if [[ $1 =~ ^(help|--help|-h|-\?)$ ]] ; then
+  echo 
+  echo " Syntax: sudo ./install.sh [mode]"
+  echo
+  echo " Option [mode]:"
+  echo
+  echo "    auto        Automatic installation, and start-up"
+  echo "    sma         Automatic installation for use at the SMA"
+  echo "    help        this help screen"
+  echo
+  echo " Environment:"
+  echo
+  echo "    DESTDIR     Deployment root (default: '/usr')"
+  echo "    PREFIX      Staging prefix (no start-up if not empty)"
+  echo
+  exit 0
+fi
+
 if [ $EUID -ne 0 ] ; then 
-  echo "Please run as root"
+  echo "Please run as root" 
   exit 1
 fi
 
+# Deployment root
 if [ "$DESTDIR" == "" ] ; then
   DESTDIR="/usr"
 fi
 
+# Staging root
+if [ "$PREFIX" == "" ] ; then
+  STAGE=$DESTDIR
+else
+  STAGE=$PREFIX/$DESTDIR
+fi
+
 # Create /usr/share/smax and its lua/ sub-directory
-SMAX="$DESTDIR/share/smax"
+SMAX="$STAGE/share/smax"
+SYSTEMD="$PREFIX/etc/systemd/system"
+
+# ============================================================================
+# Part 1: copying things in place
 
 # Copy LUA script over to /usr/share/smax
 echo ". Creating $SMAX/lua directory"
-mkdir -p $SMAX/lua || exit 2
+mkdir -p $SMAX/lua
 
 echo ". Copying LUA scripts to $SMAX/lua"
-install -m 644 -D lua/* $SMAX/lua/ || exit 3
+install -m 644 -D lua/* $SMAX/lua/
 
 # install script loader and systemd unit file
-echo ". Copying script loader to $DESTDIR/bin"
-install -m 755 smax-init.sh $DESTDIR/bin/ || echo  exit 4
+echo ". Copying script loader to $STAGE/bin"
+install -m 755 smax-init.sh $STAGE/bin/
 
 echo ". Setting DESTDIR in script loader"
-sed -i "s:/usr:$DESTDIR:g" $DESTDIR/bin/smax-init.sh || exit 5
+sed -i "s:/usr:$DESTDIR:g" $STAGE/bin/smax-init.sh
 
-echo ". Copying script loader to /etc/systemd/system"
-install -m 644 smax-scripts.service /etc/systemd/system/ || exit 6
+echo ". Copying systemd sevice unit to $SYSTEMD"
+install -m 644 smax-scripts.service $SYSTEMD/
 
-echo ". Setting DESTDIR in systemd unit"
-sed -i "s:/usr:$DESTDIR:g" /etc/systemd/system/smax-scripts.service || exit 7
+echo ". Setting DESTDIR in systemd service unit"
+sed -i "s:/usr:$DESTDIR:g" $SYSTEMD/smax-scripts.service
+
+if [[ ! $1 =~ ^(sma|SMA)$ ]] ; then
+  echo ". Removing SMA-specific sections from scripts"
+  sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*/d' $SMAX/lua/*.lua
+fi
 
 # Register smax-scripts with systemd
 echo ". Reloading systemd daemon"
-systemctl daemon-reload || exit 8
+systemctl daemon-reload
+
+if [ "$PREFIX" != "" ] ; then
+  echo "PREFIX is set, staging only."
+  echo "Done."
+  exit 0
+fi 
+
+# ============================================================================
+# Part 2: starting things up
 
 # On some distros the service is redis, on others is redis-server...
 REDIS=redis
-if [ ! -e /lib/systemd/system/$REDIS ] ; then
+if [ ! -e /lib/systemd/system/redis.service ] ; then
   REDIS=redis-server
 fi
+
+START_SMAX=1
+ENABLE_SMAX=1
 
 # if you call the script with a single argument 'auto', then it will install 
 # a default without asking any questions. (Without the option, the installer
 # will ask you to make some choices.)
-if [ "$1" == "auto" ] ; then
+if [[ $1 =~ ^(auto|sma|SMA)$ ]] ; then
   # automatic installation
   echo "Automatic installation..." 
-
-  echo ". Removing SMA-specific sections from scripts"
-  sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*/d' $SMAX/lua/*.lua || exit 9
   
-  echo ". Starting smax-scripts service"
-  systemctl restart smax-scripts || exit 10
-  
-  echo ". Enabling Redis at boot"
-  systemctl enable $REDIS || exit 11
-  
-  echo ". Enabling SMA-X at boot"
-  systemctl enable smax-scripts || exit 12
 else
   # prompt for choices
   echo "Manual installation..." 
 
-  read -p "Are you going to use SMA-X outside of the SMA? " -n 1 -r
+  read -p "Are you going to use SMA-X at the SMA? " -n 1 -r
   echo    # (optional) move to a new line
   if [[ $REPLY =~ ^[Yy]$ ]] ; then 
     echo ". Removing SMA-specific sections from scripts"
-    sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua || exit 13
+    sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua
   fi
 
   read -p "start redis with SMA-X scripts at this time? " -n 1 -r
   echo    # (optional) move to a new line
-  if [[ $REPLY =~ ^[Yy]$ ]] ; then
-    echo ". Starting smax-scripts service"
-    systemctl restart smax-scripts || exit 14
+  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then 
+    START_SMAX=0
   fi
   
   read -p "Enable and start SMA-X at boot time? " -n 1 -r
   echo    # (optional) move to a new line
-  if [[ $REPLY =~ ^[Yy]$ ]] ; then
-    echo ". Enabling Redis at boot"
-    systemctl enable $REDIS || exit 15
-    
-    echo ". Enabling SMA-X at boot"
-    systemctl enable smax-scripts || exit 16
+  if [[ ! $REPLY =~ ^[Yy]$ ]] ; then
+    ENABLE_SMAX=0
   fi  
 fi
 
+if [ $START_SMAX -ne 0 ] ; then
+  echo ". Starting smax-scripts service"
+  systemctl restart smax-scripts
+fi 
+ 
+if [ $ENABLE_SMAX -ne 0 ] ; then
+  echo ". Enabling Redis at boot"
+  systemctl enable $REDIS
+  
+  echo ". Enabling SMA-X at boot"
+  systemctl enable smax-scripts
+fi
 
 echo "Done!"
