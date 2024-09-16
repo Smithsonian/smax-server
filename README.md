@@ -19,7 +19,7 @@
 ------------------------------------------------------------------------------
 
 <a name="introduction"></a>
-## Instroduction
+## Introduction
 
 The SMA information eXchange (SMA-X) is a high performance and versatile data sharing platform for distributed 
 software systems. It is built around a central Redis database, and provides atomic access to structured data, 
