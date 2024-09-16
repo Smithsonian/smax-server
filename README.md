@@ -14,7 +14,6 @@
  - [Introduction](#introduction)
  - [Prerequisites](#prerequisites)
  - [Installation](#installing)
- - [Related GitHub repos](#related-repos)
 
 ------------------------------------------------------------------------------
 
@@ -35,6 +34,17 @@ for C/C++ and Python 3. We may provide Java and/or Rust client libraries too in 
 This repository is for the SMA-X server configuration specifically. It contains a LUA scripts, a shell script to load 
 them into a database, and a `systemd` unit file that allows to load the SMA-X scripts automatically whenever Redis is 
 started.
+
+
+ <a name="related-links"></a>
+### Related links
+
+ - [SMA-X specification](https://docs.google.com/document/d/1eYbWDClKkV7JnJxv4MxuNBNV47dFXuUWu7C4Ve_YTf0/edit?usp=sharing) 
+   document
+ - [Smithsonian/smax-clib](https://github.com/Smithsonian/smax-clib) -- a C/C++ client library for SMA-X
+ - [Smithsonian/smax-python](https://github.com/Smithsonian/smax-python) -- a Python 3 client library for SMA-X
+ - [Smithsonian/smax-postgres](https://github.com/Smithsonian/smax-postgres) -- a Postgres connector application for 
+   creating a historical record of the realtime data stored in SMA-X.
 
 <a name="prerequisites"></a>
 ## Prerequisites
@@ -71,10 +81,4 @@ Additionally, you may define a couple of shell variables prior to invoking `inst
 
 After a successful installation you may use `systemctl` to manage `redis` and the `smax-scripts` services.
 
-<a name="related-repos"></a>
-## Related GitHub repos
 
-For a C/C++ client library for SMA-X see [Smithsonian/smax-clib](https://github.com/Smithsonian/smax-clib), or for a 
-Python library use [Smithsonian/smax-python](https://github.com/Smithsonian/smax-python). To archive SMA-X data 
-sampled at regular intervals into a Postgres database, see 
-[Smithsonian/smax-postgres](https://github.com/Smithsonian/smax-postgres)
