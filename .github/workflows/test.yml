@@ -8,6 +8,13 @@ on:
       - 'smax-scripts.service'
       - '.github/workflows/test.yml'
 
+  pull_request:
+    paths:
+      - '*.sh'
+      - 'lua/**'
+      - 'smax-scripts.service'
+      - '.github/workflows/test.yml'
+
 jobs:
 
   test:
