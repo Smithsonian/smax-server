@@ -9,7 +9,8 @@
 
 # smax-server
 
-SMA Exchange (SMA-X) server configuration kit.
+[SMA Exchange (SMA-X)](https://docs.google.com/document/d/1eYbWDClKkV7JnJxv4MxuNBNV47dFXuUWu7C4Ve_YTf0/edit?usp=sharing)
+structured real-time database server configuration kit.
 
 Last updated: 19 September 2024
 
@@ -25,7 +26,7 @@ Last updated: 19 September 2024
 <a name="introduction"></a>
 ## Introduction
 
-The [SMA information eXchange (SMA-X)](https://docs.google.com/document/d/1eYbWDClKkV7JnJxv4MxuNBNV47dFXuUWu7C4Ve_YTf0/edit?usp=sharing) 
+The [SMA Exchange (SMA-X)](https://docs.google.com/document/d/1eYbWDClKkV7JnJxv4MxuNBNV47dFXuUWu7C4Ve_YTf0/edit?usp=sharing) 
 is a high performance and versatile real-time data sharing platform for distributed software systems. It is built 
 around a central Redis database, and provides atomic access to structured data, including specific branches and/or 
 leaf nodes, with associated metadadata. SMA-X was developed at the Submillimeter Array (SMA) observatory, where we use 
