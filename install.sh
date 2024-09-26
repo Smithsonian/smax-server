@@ -8,7 +8,7 @@
 # 04/18/2023
 # 
 # Attila Kovacs
-# 09/14/2024
+# 09/26/2024
 #
 
 set -e
@@ -94,10 +94,34 @@ fi
 # ============================================================================
 # Part 2: starting things up
 
+
+# Checking for systemd...
+echo "Checking for systemctl..."
+which systemctl >> /dev/null 2>&1
+
+# Don't exit on error return while we check variants
+set +e
+
 # On some distros the service is redis, on others is redis-server...
-REDIS=redis
-if [ ! -e /lib/systemd/system/redis.service ] ; then
-  REDIS=redis-server
+for name in 'redis-server' 'redis' 'valkey-server' 'valkey' ; do
+  systemctl status $name > /dev/null 2>&1;
+  if [ $? -eq 0 ] ; then
+    REDIS=$name; 
+    break
+  fi
+done
+
+# Back to exit on error...
+set -e
+
+if [ "$REDIS" == "" ] ; then
+  echo "ERROR! You must install redis or valkey or equivalent..."
+  exit 2
+fi
+
+if [ "$REDIS" != "redis" ] ; then
+  echo "Updating systemd service name to $REDIS.service" 
+  sed -i "s:redis.service:$REDIS.service:g" $SYSTEMD/smax-scripts.service
 fi
 
 START_SMAX=1
