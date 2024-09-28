@@ -29,7 +29,7 @@ Last updated: 19 September 2024
 The [SMA Exchange (SMA-X)](https://docs.google.com/document/d/1eYbWDClKkV7JnJxv4MxuNBNV47dFXuUWu7C4Ve_YTf0/edit?usp=sharing) 
 is a high performance and versatile real-time data sharing platform for distributed software systems. It is built 
 around a central Redis database, and provides atomic access to structured data, including specific branches and/or 
-leaf nodes, with associated metadadata. SMA-X was developed at the Submillimeter Array (SMA) observatory, where we use 
+leaf nodes, with associated metadata. SMA-X was developed at the Submillimeter Array (SMA) observatory, where we use 
 it to share real-time data among hundreds of computers and nearly a thousand individual programs.
 
 SMA-X consists of a set of server-side [LUA](https://lua.org/) scripts that run on [Redis](https://redis.io) (or one 
@@ -49,7 +49,8 @@ started.
    document
  - [Smithsonian/smax-clib](https://github.com/Smithsonian/smax-clib) -- a C/C++ client library for SMA-X
  - [Smithsonian/smax-python](https://github.com/Smithsonian/smax-python) -- a Python 3 client library for SMA-X
- - [Smithsonian/smax-postgres](https://github.com/Smithsonian/smax-postgres) -- to create a historical records of SMA-X data in a PostgreSQL time series database.
+ - [Smithsonian/smax-postgres](https://github.com/Smithsonian/smax-postgres) -- to create a historical records of 
+   SMA-X data in a PostgreSQL time series database.
 
 <a name="prerequisites"></a>
 ## Prerequisites
@@ -65,11 +66,11 @@ this repo). You may want to edit the `bind` setting to allow connections to your
 <a name="installing"></a>
 ## Installation
 
- - [Linux install with systemd](#linux-install)
+ - [Linux install with SystemD](#linux-install)
  - [Manual installation](#manual-install)
 
 <a name="linux-install"></a>
-### Linux install with systemd
+### Linux install with SystemD
 
 These instructions are for Linux systems (RPM or Debian based) using `systemd`. 
 
@@ -98,7 +99,7 @@ After a successful installation you may use `systemctl` to manage `redis` and th
 <a name="manual-install"></a>
 ### Manual installation
 
-You can also install and configure SMA-X manually, for non-systemd and/or non-Linux systems (e.g. MacOS X, BSD,
+You can also install and configure SMA-X manually, for non-SystemD and/or non-Linux systems (e.g. MacOS X, BSD,
 Linux SysV, Windows), following the steps below:
 
 1. Configure your Redis server, for your network and other preferences.
