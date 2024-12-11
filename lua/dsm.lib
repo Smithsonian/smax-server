@@ -1,0 +1,38 @@
+#!lua name=dsm
+
+-- Legacy DSM emulation helper library for Redis
+-- Author: Attila Kovacs
+-- Version: 11 December 2024
+-- 
+-- GitHub: Smithsonian/smax-server
+
+local function dsm_get_key(KEYS, ARGS)
+ -- keys: <none>
+ -- arguments: host target key
+ -- returns name SMA-X table name under which the data can be found
+
+ local table = "DSM:"..ARGV[2]
+ local key = ARGV[3]
+
+ -- If the data is stored under the target name, use that
+ if redis.call('hexists', table, key) == 1 then
+   return table
+ end
+
+ -- If the data is stored under the caller's name, use that
+ table = "DSM:"..ARGV[1]
+ if redis.call('hexists', table, key) == 1 then
+   return table
+ end
+
+ -- LUA false maps to Redis nil
+ return false
+end
+
+
+redis.register_function {
+ function_name='dsm_get_key', 
+ callback=dsm_get_key,
+ flags={ 'no-writes' },
+ description='(|host, target, key) Returns the SMA-X table for the given host and target machine and DSM key'
+}

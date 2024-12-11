@@ -78,7 +78,7 @@ sed -i "s:/usr:$DESTDIR:g" $SYSTEMD/smax-scripts.service
 
 if [[ ! $1 =~ ^(sma|SMA)$ ]] ; then
   echo ". Removing SMA-specific sections from scripts"
-  sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*/d' $SMAX/lua/*.lua
+  sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*/d' $SMAX/lua/*.lua $SMAX/lua/*.lib 
 fi
 
 # Register smax-scripts with systemd
@@ -142,7 +142,7 @@ else
   echo    # (optional) move to a new line
   if [[ $REPLY =~ ^[Yy]$ ]] ; then 
     echo ". Removing SMA-specific sections from scripts"
-    sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua
+    sed -i '/^.*BEGIN SMA.*/,/^.*END SMA.*$/d' *.lua *.lib
   fi
 
   read -p "start redis with SMA-X scripts at this time? " -n 1 -r

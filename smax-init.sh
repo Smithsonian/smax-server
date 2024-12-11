@@ -47,6 +47,7 @@ load_script HMGetWithMeta
 load_script HMSetWithMeta
 load_script GetStruct
 load_script DSMGetTable
+load_script DelKey
 
 exit 0
 
