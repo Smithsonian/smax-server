@@ -1,3 +1,11 @@
+#!lua
+
+-- The SMA-X library for Redis
+-- Author: Attila Kovacs
+-- Version: 11 December 2024
+-- 
+-- GitHub: Smithsonian/smax-server
+
 -- keys: [1+] SMA-X keywords
 -- arguments: (none)
 -- returns: (integer) the total number of fields deleted, including in sub-structures, and in parent structures.

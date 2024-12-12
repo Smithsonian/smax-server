@@ -1,3 +1,11 @@
+#!lua
+
+-- The SMA-X library for Redis
+-- Author: Attila Kovacs
+-- Version: 11 December 2024
+-- 
+-- GitHub: Smithsonian/smax-server
+
 -- Needed for server-side timestamping...
 redis.replicate_commands()
 

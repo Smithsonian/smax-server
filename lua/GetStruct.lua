@@ -1,3 +1,11 @@
+#!lua flags=no-writes
+
+-- The SMA-X library for Redis
+-- Author: Attila Kovacs
+-- Version: 11 December 2024
+-- 
+-- GitHub: Smithsonian/smax-server
+
 -- keys: [1] Structure name (hash table)
 -- arguments: (none)
 -- Arrays of:

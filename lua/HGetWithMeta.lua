@@ -1,3 +1,11 @@
+#!lua flags=no-writes
+
+-- The SMA-X library for Redis
+-- Author: Attila Kovacs
+-- Version: 11 December 2024
+-- 
+-- GitHub: Smithsonian/smax-server
+
 -- keys: [1] Hash table to get value from
 -- arguments: field
 -- returns an array of { value, type, dim, timestamp, origin, serial }

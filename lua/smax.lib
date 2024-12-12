@@ -1,5 +1,14 @@
 #!lua name=smax
 
+-- The SMA-X library for Redis
+-- Author: Attila Kovacs
+-- Version: 11 December 2024
+-- 
+-- GitHub: Smithsonian/smax-server
+
+
+
+
 local function smax_set(KEYS, ARGS)
  -- keys: [1] Hash table to add value to
  -- arguments: 1:origin 2:field 3:value 4:type 5:dim
@@ -328,40 +337,40 @@ end
 redis.register_function{
  function_name='smax_set', 
  callback=smax_set,
- description='(table | origin, key, value, type, dim) Sets an SMA-X leaf node'
+ description='Sets an SMA-X leaf node (table | origin, key, value, type, dim) '
 }
  
 redis.register_function{
  function_name='smax_get', 
  callback=smax_get, 
  flags={ 'no-writes' },
- description='(table | key) Returns an SMA-X variable (table:key) with metadata'
+ description='Returns an SMA-X variable (table:key) with metadata (table | key)'
 }
 
 redis.register_function{
  function_name='smax_mset', 
  callback=smax_mset,
  flags={},
- description='(table | origin { key1, value1, type1, dim1 } ...) Sets multiple SMA-X entrie in the same table'
+ description='Sets multiple SMA-X entrie in the same table (table | origin { key1, value1, type1, dim1 } ...)'
 }
 
 redis.register_function{
  function_name='smax_mget', 
  callback=smax_mget, 
  flags={ 'no-writes' },
- description='(table | key1 ...) Returns multiple SMA-X entries from a table with metadata'
+ description='Returns multiple SMA-X entries from a table with metadata (table | key1 ...)'
 }
 
 redis.register_function{
  function_name='smax_get_struct', 
  callback=smax_get_struct, 
  flags={ 'no-writes' },
- description='(table) Returns an entire structure from SMA-X atomically with metadata'
+ description='Returns an entire structure from SMA-X atomically with metadata (table)'
 }
 
 redis.register_function{
  function_name='smax_del', 
  callback=smax_del,
  flags={},
- description='Deletes a SMA-X ID, removing all references in parents and metadata alike'
+ description='Deletes a SMA-X ID, removing all references in parents and metadata alike (key1[,key2...]|)'
 }
