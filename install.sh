@@ -122,6 +122,11 @@ fi
 if [ "$REDIS" != "redis" ] ; then
   echo "Updating systemd service name to $REDIS.service" 
   sed -i "s:redis.service:$REDIS.service:g" $SYSTEMD/smax-scripts.service
+  
+  if [[ $REDIS != redis* ]] ; then
+    echo "Updating cli to $REDIS-cli in scripts" 
+    sed -i "s:redis-cli:$REDIS-cli:g" $STAGE/bin/smax-*.sh
+  fi
 fi
 
 START_SMAX=1
