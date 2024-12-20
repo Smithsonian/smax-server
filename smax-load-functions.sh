@@ -30,6 +30,11 @@ load_function() {
   NAME=$1
   echo -n "> Loading $NAME. New? "
   `cat $LUA/$NAME | redis-cli function load replace`
+  
+  if [ $? -ne 0 ] ; then
+    echo "ERROR! loading $NAME. Goodbye!"
+    exit 1
+  fi
 }
 
 load_function smax.lib

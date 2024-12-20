@@ -39,7 +39,13 @@ load_script() {
   SCRIPT=`cat $LUA/$NAME.lua`
   SHA1=`redis-cli script load "$SCRIPT"`
   redis-cli hset scripts $NAME $SHA1
+  
+  if [ $? -ne 0 ] ; then
+    echo "ERROR! loading $NAME. Goodbye!"
+    exit 1
+  fi
 }
+
 
 load_script HGetWithMeta
 load_script HSetWithMeta
