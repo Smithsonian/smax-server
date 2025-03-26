@@ -102,22 +102,25 @@ After a successful installation you may use `systemctl` to manage `redis` and th
 You can also install and configure SMA-X manually, for non-SystemD and/or non-Linux systems (e.g. MacOS X, BSD,
 Linux SysV, Windows), following the steps below:
 
-1. Configure your Redis server, for your network and other preferences.
+1. Configure your Redis or Valkey server, for your network and other preferences.
 
-2. Copy the LUA scripts from the `lua/` folder to an appropriate location for your boot service manager (e.g. 
-   `/usr/share/smax/lua` or equivalent). Optionally, edit the LUA scripts to remove any SMA-specific content, which 
-   is clearly marked.
+2. Copy the LUA scripts from the `lua/` folder to an appropriate location (e.g. `/usr/share/smax/lua`). Optionally, 
+   edit the LUA scripts to remove any SMA-specific content, which is clearly marked.
    
 3. If your system has bash, copy `smax-init.sh` to an appropriate location (e.g. `/usr/bin` or equivalent) from where 
-   your service manager may run it. Edit the script to reflect the location where you installed the LUA scripts. 
-   Alternatively, you may create a similar initializer for your system using the script language of your choice. 
-   (`smax-init.sh` simply uses a set of `redis-cli` commands to initialize a Redis database for SMA-X.)
+   you or your service manager may run it. Edit the script to reflect the location where you installed the LUA 
+   scripts. Alternatively, you may create a similar initializer for your system using the script language of your 
+   choice. 
+   
+4. If using Valkey (not Redis) as your server, you should also replace `redis-cli` in your installed `smax-init.sh`
+   with `valkey-cli` (`smax-init.sh` simply uses a set of `redis-cli` commands to initialize a Redis database for 
+   SMA-X.)
 
 4. To start SMA-X on boot, first make sure that the Redis server is started on boot. Conditional on Redis being 
    available, you should then configure your system to run the loader script (`smax-init.sh` or equivalent) also on 
    boot, after Redis.
    
-5. Reboot or else start Redis and run the LUA script loader manually.
+5. Reboot or else start Redis and run the `smax-init.sh` manually.
 
 
 
