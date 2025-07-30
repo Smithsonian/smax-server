@@ -15,6 +15,15 @@ structured real-time database server configuration kit.
 Last updated: 19 September 2024
 
 
+## Citation
+
+If you use SMA-X for your project, please cite as: 
+
+ - Kovács, Attila, Grimes, Paul K., Moriarty, Christopher, and Wilson, Robert, Journal of Astronomical Telescopes, Instruments, and Systems, Volume 11, id. 017001 (2025). (DOI: [10.1117/1.JATIS.11.1.017001](https://ui.adsabs.harvard.edu/link_gateway/2025JATIS..11a7001K/doi:10.1117/1.JATIS.11.1.017001)). 
+
+You may also find the citation record on ADS as [2025JATIS..11a7001K](https://ui.adsabs.harvard.edu/abs/2025JATIS..11a7001K/abstract).
+
+
 ## Table of contents
 
  - [Introduction](#introduction)
