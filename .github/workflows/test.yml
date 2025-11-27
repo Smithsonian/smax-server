@@ -28,7 +28,7 @@ jobs:
       run: sudo apt install redis
     
     - name: Check out smax-server
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       
     - name: Run installer
       run: sudo ./install.sh auto
